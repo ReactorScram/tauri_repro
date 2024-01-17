@@ -8,8 +8,18 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
-    tauri::Builder::default()
+    let mut app = tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("should be able to build the Tauri app");
+
+    let start_time = std::time::Instant::now();
+
+    loop {
+        let iteration = app.run_iteration();
+        println!("Ran Tauri iteration at {:?}", start_time.elapsed());
+        if iteration.window_count == 0 {
+            break;
+        }
+    }
 }
